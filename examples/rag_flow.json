@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "name": "rag-pipeline",
+    "version": "1.0.0",
+    "created_at": "2026-01-30T10:00:00Z",
+    "owner": "admin"
+  },
+  "nodes": [
+    {
+      "id": "loader",
+      "type": "loader.static",
+      "version": "1.0",
+      "config": {
+        "text": "Artificial Intelligence is transforming industries. It enables automation and advanced analysis."
+      }
+    },
+    {
+      "id": "chunker",
+      "type": "rag.chunk",
+      "version": "1.0",
+      "config": {
+        "size": 20,
+        "overlap": 5
+      }
+    },
+    {
+      "id": "embedder",
+      "type": "rag.embed",
+      "version": "1.0",
+      "config": {
+        "model": "text-embedding-3-small"
+      }
+    },
+    {
+      "id": "store",
+      "type": "rag.vector_store",
+      "version": "1.0",
+      "config": {
+        "collection": "test_docs"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": { "node": "loader", "port": "output" },
+      "to": { "node": "chunker", "port": "input" }
+    },
+    {
+      "id": "e2",
+      "from": { "node": "chunker", "port": "output" },
+      "to": { "node": "embedder", "port": "input" }
+    },
+    {
+      "id": "e3",
+      "from": { "node": "embedder", "port": "output" },
+      "to": { "node": "store", "port": "input" }
+    }
+  ]
+}

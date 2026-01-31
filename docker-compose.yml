@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  # AION Runtime API
+  api:
+    build: .
+    container_name: aion-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+    command: uvicorn runtime.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Optional: Celery Worker for background execution
+  worker:
+    build: .
+    container_name: aion-worker
+    volumes:
+      - .:/app
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+    command: celery -A runtime.worker.app worker --loglevel=info
+    # Note: runtime.worker needs to be created if we strictly want celery workers
+
+  redis:
+    image: redis:7-alpine
+    container_name: aion-redis
+    ports:
+      - "6379:6379"
+
+  # AION Studio (Frontend)
+  studio:
+    image: node:18-alpine
+    container_name: aion-studio
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./studio:/app
+    command: sh -c "npm install && npm run dev -- --host"
+
+networks:
+  default:
+    driver: bridge

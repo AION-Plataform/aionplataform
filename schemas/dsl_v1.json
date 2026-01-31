@@ -1,0 +1,127 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AION Flow Definition DSL",
+  "type": "object",
+  "required": [
+    "metadata",
+    "nodes",
+    "edges"
+  ],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": [
+        "name",
+        "version",
+        "created_at",
+        "owner"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "version",
+          "config"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object"
+          },
+          "position": {
+             "type": "object",
+             "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" }
+             }
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "from",
+          "to"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "from": {
+            "type": "object",
+            "required": [
+              "node",
+              "port"
+            ],
+            "properties": {
+              "node": {
+                "type": "string"
+              },
+              "port": {
+                "type": "string"
+              }
+            }
+          },
+          "to": {
+            "type": "object",
+            "required": [
+              "node",
+              "port"
+            ],
+            "properties": {
+              "node": {
+                "type": "string"
+              },
+              "port": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "secrets_ref": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "policies": {
+      "type": "object"
+    }
+  }
+}

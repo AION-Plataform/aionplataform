@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "name": "simple-rag-test",
+    "version": "1.0.0",
+    "created_at": "2026-01-30T10:00:00Z",
+    "owner": "admin"
+  },
+  "nodes": [
+    {
+      "id": "loader_1",
+      "type": "loader.pdf",
+      "version": "1.0",
+      "config": {
+        "path": "docs/manual.pdf"
+      }
+    },
+    {
+      "id": "transform_1",
+      "type": "transform.clean",
+      "version": "1.0",
+      "config": {
+        "remove_stopwords": true
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_1",
+      "from": { "node": "loader_1", "port": "output" },
+      "to": { "node": "transform_1", "port": "input" }
+    }
+  ]
+}

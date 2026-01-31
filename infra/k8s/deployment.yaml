@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aion-runtime
+  namespace: aion-system
+  labels:
+    app: aion-runtime
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aion-runtime
+  template:
+    metadata:
+      labels:
+        app: aion-runtime
+    spec:
+      containers:
+      - name: runtime
+        image: aion-runtime:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "sqlite:///./aion.db" # In real K8s, use a volume or external DB
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aion-secrets
+              key: secret-key
+        resources:
+          limits:
+            cpu: "1"
+            memory: "512Mi"
+          requests:
+            cpu: "0.5"
+            memory: "256Mi"
+        volumeMounts:
+        - name: data-volume
+          mountPath: /app/data
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+           claimName: aion-pvc

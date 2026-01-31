@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Node / JS
+node_modules/
+dist/
+build/
+.DS_Store
+
+# AION Specific
+aion.db
+*.log
+secret.key
+*.key

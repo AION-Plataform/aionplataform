@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "name": "full-rag-gen",
+    "version": "1.0.0",
+    "created_at": "2026-01-30T10:00:00Z",
+    "owner": "admin"
+  },
+  "nodes": [
+    { "id": "loader", "type": "loader.static", "version": "1.0", "config": { "text": "AION uses a Fordist approach to AI assembly." } },
+    { "id": "chunker", "type": "rag.chunk", "version": "1.0", "config": { "size": 50 } },
+    { "id": "embedder", "type": "rag.embed", "version": "1.0", "config": { "model": "small" } },
+    { "id": "store", "type": "rag.vector_store", "version": "1.0", "config": { "collection": "main" } },
+    { "id": "retriever", "type": "rag.retrieve", "version": "1.0", "config": { "top_k": 3 } },
+    { "id": "generator", "type": "llm.generate", "version": "1.0", "config": { "prompt": "Answer based on context: {context}" } }
+  ],
+  "edges": [
+    { "id": "e1", "from": { "node": "loader", "port": "out" }, "to": { "node": "chunker", "port": "in" } },
+    { "id": "e2", "from": { "node": "chunker", "port": "out" }, "to": { "node": "embedder", "port": "in" } },
+    { "id": "e3", "from": { "node": "embedder", "port": "out" }, "to": { "node": "store", "port": "in" } },
+    { "id": "e4", "from": { "node": "store", "port": "out" }, "to": { "node": "retriever", "port": "trigger" } }, 
+    { "id": "e5", "from": { "node": "retriever", "port": "documents" }, "to": { "node": "generator", "port": "context" } }
+  ]
+}

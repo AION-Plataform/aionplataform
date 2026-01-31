@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Obsidian Dark Theme - High Contrast Professional */
+    --background: 240 5% 3%; /* Darker, almost black */
+    --foreground: 0 0% 98%;
+    
+    --card: 240 5% 5%;
+    --card-foreground: 0 0% 98%;
+ 
+    --popover: 240 5% 5%;
+    --popover-foreground: 0 0% 98%;
+ 
+    --primary: 265 89% 66%; /* Vivid Violet */
+    --primary-foreground: 0 0% 100%;
+ 
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 98%;
+ 
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 60%;
+ 
+    --accent: 265 89% 66%;
+    --accent-foreground: 0 0% 100%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+ 
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 265 89% 66%;
+    
+    --radius: 0.5rem; /* Sharper corners */
+  }
+ 
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    /* ... same as root for now as we are dark-first */
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-zinc-800 rounded-full hover:bg-zinc-700 transition-colors;
+  }
+}
+
+@layer utilities {
+    .glass {
+        @apply bg-opacity-20 backdrop-blur-lg bg-zinc-900/40 border border-white/10 shadow-xl;
+    }
+    
+    .glass-panel {
+        @apply bg-zinc-900/60 backdrop-blur-xl border-r border-white/5;
+    }
+
+    .animate-in {
+        animation: animate-in 0.3s ease-out forwards;
+    }
+}
+
+@keyframes animate-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* React Flow Customizations */
+.react-flow__node {
+    @apply rounded-xl border-0 shadow-2xl transition-all duration-300;
+}
+
+.react-flow__node-selected {
+    @apply ring-2 ring-primary ring-offset-2 ring-offset-background;
+}
+
+.react-flow__handle {
+    @apply w-3 h-3 bg-zinc-400 border-2 border-background transition-colors;
+}
+
+.react-flow__handle:hover {
+    @apply bg-primary w-4 h-4;
+}
+
+.react-flow__edge-path {
+    @apply stroke-zinc-600 stroke-2;
+}
+
+.react-flow__controls button {
+    @apply bg-zinc-800 border-zinc-700 fill-zinc-400 hover:bg-zinc-700 rounded-md m-0.5 transition-colors;
+}
