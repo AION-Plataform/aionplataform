@@ -41,12 +41,14 @@ class VectorStoreNode(BaseNode):
     async def execute(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
         # Would normally connect to Qdrant/Pinecone
         print("  [VectorStore] Storing embeddings...")
-        return {"status": "indexed", "count": 10}
+        index = self.config.get("index") or self.config.get("collection", "default")
+        return {"status": "indexed", "count": 10, "store_id": f"{index}-store"}
 
 class RetrieveNode(BaseNode):
     async def execute(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
         query = inputs.get("query", "test query")
-        print(f"  [Retrieve] Searching for: {query}")
+        store_id = inputs.get("store_id")
+        print(f"  [Retrieve] Searching for: {query} in store {store_id}")
         
         # Mock retrieval results
         return {

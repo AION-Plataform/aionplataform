@@ -9,15 +9,15 @@
     { "id": "loader", "type": "loader.static", "version": "1.0", "config": { "text": "AION uses a Fordist approach to AI assembly." } },
     { "id": "chunker", "type": "rag.chunk", "version": "1.0", "config": { "size": 50 } },
     { "id": "embedder", "type": "rag.embed", "version": "1.0", "config": { "model": "small" } },
-    { "id": "store", "type": "rag.vector_store", "version": "1.0", "config": { "collection": "main" } },
+    { "id": "store", "type": "rag.vector_store", "version": "1.0", "config": { "index": "main" } },
     { "id": "retriever", "type": "rag.retrieve", "version": "1.0", "config": { "top_k": 3 } },
     { "id": "generator", "type": "llm.generate", "version": "1.0", "config": { "prompt": "Answer based on context: {context}" } }
   ],
   "edges": [
-    { "id": "e1", "from": { "node": "loader", "port": "out" }, "to": { "node": "chunker", "port": "in" } },
-    { "id": "e2", "from": { "node": "chunker", "port": "out" }, "to": { "node": "embedder", "port": "in" } },
-    { "id": "e3", "from": { "node": "embedder", "port": "out" }, "to": { "node": "store", "port": "in" } },
-    { "id": "e4", "from": { "node": "store", "port": "out" }, "to": { "node": "retriever", "port": "trigger" } }, 
-    { "id": "e5", "from": { "node": "retriever", "port": "documents" }, "to": { "node": "generator", "port": "context" } }
+    { "id": "e1", "source": "loader", "source_output": "content", "target": "chunker", "target_input": "content" },
+    { "id": "e2", "source": "chunker", "source_output": "chunks", "target": "embedder", "target_input": "chunks" },
+    { "id": "e3", "source": "embedder", "source_output": "embeddings", "target": "store", "target_input": "embeddings" },
+    { "id": "e4", "source": "store", "source_output": "store_id", "target": "retriever", "target_input": "store_id" }, 
+    { "id": "e5", "source": "retriever", "source_output": "documents", "target": "generator", "target_input": "context" }
   ]
 }

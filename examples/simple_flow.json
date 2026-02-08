@@ -26,8 +26,10 @@
   "edges": [
     {
       "id": "edge_1",
-      "from": { "node": "loader_1", "port": "output" },
-      "to": { "node": "transform_1", "port": "input" }
+      "source": "loader_1",
+      "source_output": "content",
+      "target": "transform_1",
+      "target_input": "content"
     }
   ]
 }

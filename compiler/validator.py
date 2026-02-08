@@ -1,25 +1,82 @@
 import networkx as nx
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import List, Dict, Any, Optional
 
 # Re-using definitions that would ideally come from shared schemas
 class Node(BaseModel):
     id: str
     type: str
-    version: str
+    version: str = "1.0.0"
+    inputs: Optional[Dict[str, Any]] = None
+    outputs: Optional[Dict[str, Any]] = None
     config: Dict[str, Any] = {}
+    policies: Optional[Dict[str, Any]] = None
 
 class Edge(BaseModel):
     id: str
-    source: Dict[str, str] = Field(alias="from")
-    target: Dict[str, str] = Field(alias="to")
+    source: Optional[str] = None
+    source_output: Optional[str] = None
+    target: Optional[str] = None
+    target_input: Optional[str] = None
+    legacy_source: Optional[Dict[str, str]] = Field(default=None, alias="from")
+    legacy_target: Optional[Dict[str, str]] = Field(default=None, alias="to")
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_legacy_fields(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        if not isinstance(values, dict):
+            return values
+
+        legacy_source = values.get("from")
+        legacy_target = values.get("to")
+
+        if isinstance(legacy_source, dict):
+            values.setdefault("source", legacy_source.get("node"))
+            values.setdefault("source_output", legacy_source.get("port"))
+
+        if isinstance(legacy_target, dict):
+            values.setdefault("target", legacy_target.get("node"))
+            values.setdefault("target_input", legacy_target.get("port"))
+
+        if isinstance(values.get("source"), dict):
+            source_dict = values["source"]
+            values["source"] = source_dict.get("node")
+            values.setdefault("source_output", source_dict.get("output"))
+
+        if isinstance(values.get("target"), dict):
+            target_dict = values["target"]
+            values["target"] = target_dict.get("node")
+            values.setdefault("target_input", target_dict.get("input"))
+
+        return values
+
+    def source_node(self) -> Optional[str]:
+        return self.source
+
+    def target_node(self) -> Optional[str]:
+        return self.target
+
+    def source_port(self) -> str:
+        return self.source_output or "output"
+
+    def target_port(self) -> str:
+        return self.target_input or "input"
 
 class FlowDSL(BaseModel):
-    metadata: Dict[str, Any]
-    nodes: List[Node]
-    edges: List[Edge]
-    secrets_ref: Optional[List[str]] = []
-    policies: Optional[Dict[str, Any]] = {}
+    metadata: Dict[str, Any] = {}
+    nodes: List[Node] = []
+    edges: List[Edge] = []
+    secrets_reference: Optional[Dict[str, Any]] = Field(default=None, alias="secrets_reference")
+    policies: Optional[Dict[str, Any]] = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_secrets_reference(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        if not isinstance(values, dict):
+            return values
+        if "secrets_reference" not in values and "secrets_ref" in values:
+            values["secrets_reference"] = values.get("secrets_ref")
+        return values
 
 class ValidationResult(BaseModel):
     valid: bool
@@ -37,11 +94,26 @@ class GraphValidator:
             self.graph.add_node(node.id, **node.dict())
         
         for edge in self.dsl.edges:
-            self.graph.add_edge(edge.source['node'], edge.target['node'], id=edge.id)
+            source_node = edge.source_node()
+            target_node = edge.target_node()
+            if not source_node or not target_node:
+                continue
+            self.graph.add_edge(source_node, target_node, id=edge.id)
 
     def validate(self) -> ValidationResult:
         errors = []
         warnings = []
+
+        # 0. Check for invalid edges
+        node_ids = {node.id for node in self.dsl.nodes}
+        for edge in self.dsl.edges:
+            source_node = edge.source_node()
+            target_node = edge.target_node()
+            if not source_node or not target_node:
+                errors.append(f"Edge {edge.id} is missing source or target node.")
+                continue
+            if source_node not in node_ids or target_node not in node_ids:
+                errors.append(f"Edge {edge.id} references unknown nodes: {source_node} -> {target_node}.")
 
         # 1. Check for Cycles
         if not nx.is_directed_acyclic_graph(self.graph):

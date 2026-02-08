@@ -36,25 +36,31 @@
       "type": "rag.vector_store",
       "version": "1.0",
       "config": {
-        "collection": "test_docs"
+        "index": "test_docs"
       }
     }
   ],
   "edges": [
     {
       "id": "e1",
-      "from": { "node": "loader", "port": "output" },
-      "to": { "node": "chunker", "port": "input" }
+      "source": "loader",
+      "source_output": "content",
+      "target": "chunker",
+      "target_input": "content"
     },
     {
       "id": "e2",
-      "from": { "node": "chunker", "port": "output" },
-      "to": { "node": "embedder", "port": "input" }
+      "source": "chunker",
+      "source_output": "chunks",
+      "target": "embedder",
+      "target_input": "chunks"
     },
     {
       "id": "e3",
-      "from": { "node": "embedder", "port": "output" },
-      "to": { "node": "store", "port": "input" }
+      "source": "embedder",
+      "source_output": "embeddings",
+      "target": "store",
+      "target_input": "embeddings"
     }
   ]
 }

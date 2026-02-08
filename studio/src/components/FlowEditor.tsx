@@ -123,8 +123,10 @@ const EditorInner = () => {
           })),
           edges: flow.edges.map((e: any) => ({
               id: e.id,
-              from: { node: e.source, port: e.sourceHandle || "output" },
-              to: { node: e.target, port: e.targetHandle || "input" }
+              source: e.source,
+              source_output: e.sourceHandle || "output",
+              target: e.target,
+              target_input: e.targetHandle || "input",
           }))
       };
 

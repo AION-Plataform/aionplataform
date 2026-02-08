@@ -22,3 +22,25 @@ class CleanTextNode(BaseNode):
             cleaned += " [STOPWORDS REMOVED]"
             
         return {"content": cleaned}
+
+class NormalizeNode(BaseNode):
+    async def execute(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+        records = []
+        for value in inputs.values():
+            if isinstance(value, dict) and "rows" in value:
+                records = value["rows"]
+                break
+            if isinstance(value, list):
+                records = value
+                break
+
+        schema = self.config.get("schema", {})
+        print(f"  [Normalize] Normalizing {len(records)} records to schema: {list(schema.keys())}")
+        normalized = []
+        for record in records:
+            if isinstance(record, dict):
+                normalized.append({key: record.get(key) for key in schema.keys()} if schema else record)
+            else:
+                normalized.append(record)
+
+        return {"normalized": normalized}

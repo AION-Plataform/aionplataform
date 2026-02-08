@@ -3,12 +3,18 @@ from typing import Dict, Any, List
 from pydantic import BaseModel
 
 # Duplicate definition for now to avoid package import issues across folders in this env
+class InputBinding(BaseModel):
+    source_node: str
+    source_output: str
+    target_input: str
+
 class ExecutionStep(BaseModel):
     step_id: str
     node_id: str
     node_type: str
     config: Dict[str, Any]
     depends_on: List[str]
+    input_bindings: List[InputBinding] = []
 
 class ExecutionPlan(BaseModel):
     flow_id: str
@@ -43,12 +49,30 @@ class AIONRuntime:
         
         # Resolve Inputs from dependencies
         inputs = {}
-        for dep_id in step.depends_on:
-             # In a real graph, we'd map specific output ports to input ports.
-             # Here we just grab the previous step's result.
-             dep_step_id = f"step_{dep_id}" # simplistic mapping
-             if dep_step_id in context.results:
-                 inputs[dep_id] = context.results[dep_step_id]
+        if step.input_bindings:
+            for binding in step.input_bindings:
+                dep_step_id = f"step_{binding.source_node}"
+                if dep_step_id not in context.results:
+                    continue
+                source_result = context.results[dep_step_id]
+                if isinstance(source_result, dict) and binding.source_output in source_result:
+                    value = source_result[binding.source_output]
+                else:
+                    value = source_result
+
+                if binding.target_input in inputs:
+                    existing = inputs[binding.target_input]
+                    if isinstance(existing, list):
+                        existing.append(value)
+                    else:
+                        inputs[binding.target_input] = [existing, value]
+                else:
+                    inputs[binding.target_input] = value
+        else:
+            for dep_id in step.depends_on:
+                dep_step_id = f"step_{dep_id}" # fallback mapping
+                if dep_step_id in context.results:
+                    inputs[dep_id] = context.results[dep_step_id]
 
         # Simulate Node Logic
         result = await self._simulate_node_execution(step.node_type, step.config, inputs)

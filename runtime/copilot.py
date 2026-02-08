@@ -58,15 +58,15 @@ class AIONCopilot:
             "owner": "copilot"
           },
           "nodes": [
-            { "id": "n1", "type": "loader.pdf", "version": "1.0", "config": { "path": "docs/" }, "position": { "x": 100, "y": 100 } },
-            { "id": "n2", "type": "rag.chunk", "version": "1.0", "config": { "size": 500 }, "position": { "x": 300, "y": 100 } },
-            { "id": "n3", "type": "rag.embed", "version": "1.0", "config": {}, "position": { "x": 500, "y": 100 } },
-            { "id": "n4", "type": "rag.vector_store", "version": "1.0", "config": {}, "position": { "x": 700, "y": 100 } }
+            { "id": "n1", "type": "loader.pdf", "version": "1.0.0", "config": { "path": "docs/" }, "position": { "x": 100, "y": 100 } },
+            { "id": "n2", "type": "rag.chunk", "version": "1.0.0", "config": { "size": 500 }, "position": { "x": 300, "y": 100 } },
+            { "id": "n3", "type": "rag.embed", "version": "1.0.0", "config": {}, "position": { "x": 500, "y": 100 } },
+            { "id": "n4", "type": "rag.vector_store", "version": "1.0.0", "config": {}, "position": { "x": 700, "y": 100 } }
           ],
           "edges": [
-            { "id": "e1", "from": { "node": "n1", "port": "output" }, "to": { "node": "n2", "port": "input" } },
-            { "id": "e2", "from": { "node": "n2", "port": "output" }, "to": { "node": "n3", "port": "input" } },
-            { "id": "e3", "from": { "node": "n3", "port": "output" }, "to": { "node": "n4", "port": "input" } }
+            { "id": "e1", "source": "n1", "source_output": "content", "target": "n2", "target_input": "content" },
+            { "id": "e2", "source": "n2", "source_output": "chunks", "target": "n3", "target_input": "chunks" },
+            { "id": "e3", "source": "n3", "source_output": "embeddings", "target": "n4", "target_input": "embeddings" }
           ]
         }
 
@@ -80,11 +80,11 @@ class AIONCopilot:
             "owner": "copilot"
           },
           "nodes": [
-            { "id": "n1", "type": "loader.static", "version": "1.0", "config": { "text": "System Prompt..." }, "position": { "x": 100, "y": 100 } },
-            { "id": "n2", "type": "llm.generate", "version": "1.0", "config": { "model": "gpt-4" }, "position": { "x": 400, "y": 100 } }
+            { "id": "n1", "type": "loader.static", "version": "1.0.0", "config": { "text": "System Prompt..." }, "position": { "x": 100, "y": 100 } },
+            { "id": "n2", "type": "llm.generate", "version": "1.0.0", "config": { "model": "gpt-4" }, "position": { "x": 400, "y": 100 } }
           ],
           "edges": [
-            { "id": "e1", "from": { "node": "n1", "port": "output" }, "to": { "node": "n2", "port": "context" } }
+            { "id": "e1", "source": "n1", "source_output": "content", "target": "n2", "target_input": "context" }
           ]
         }
 

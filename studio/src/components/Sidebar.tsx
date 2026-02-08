@@ -31,7 +31,14 @@ export const Sidebar = () => {
         <Section title="Data Sources">
             <DraggableNode type="loader.pdf" label="PDF Document" icon={<FileText className="w-4 h-4 text-rose-400"/>} onDragStart={onDragStart} />
             <DraggableNode type="loader.static" label="Static Text" icon={<FileText className="w-4 h-4 text-zinc-400"/>} onDragStart={onDragStart} />
-            <DraggableNode type="loader.web" label="Web Scraper" icon={<Database className="w-4 h-4 text-cyan-400"/>} onDragStart={onDragStart} />
+            <DraggableNode type="loader.sql" label="SQL Query" icon={<Database className="w-4 h-4 text-emerald-400"/>} onDragStart={onDragStart} />
+            <DraggableNode type="loader.api" label="API Loader" icon={<Database className="w-4 h-4 text-cyan-400"/>} onDragStart={onDragStart} />
+            <DraggableNode type="loader.web" label="Web Scraper" icon={<Database className="w-4 h-4 text-blue-400"/>} onDragStart={onDragStart} />
+        </Section>
+
+        <Section title="Transforms">
+            <DraggableNode type="transform.clean" label="Clean Text" icon={<Layers className="w-4 h-4 text-amber-400"/>} onDragStart={onDragStart} />
+            <DraggableNode type="transform.normalize" label="Normalize Records" icon={<Layers className="w-4 h-4 text-sky-400"/>} onDragStart={onDragStart} />
         </Section>
         
         <Section title="RAG Operations">
@@ -43,7 +50,12 @@ export const Sidebar = () => {
 
         <Section title="Intelligence">
             <DraggableNode type="llm.generate" label="LLM Generation" icon={<Bot className="w-4 h-4 text-violet-400"/>} onDragStart={onDragStart} />
-            <DraggableNode type="agent.react" label="ReAct Agent" icon={<Bot className="w-4 h-4 text-teal-400"/>} onDragStart={onDragStart} />
+            <DraggableNode type="agent.router" label="Agent Router" icon={<Bot className="w-4 h-4 text-teal-400"/>} onDragStart={onDragStart} />
+        </Section>
+
+        <Section title="Tools & Outputs">
+            <DraggableNode type="tool.http" label="HTTP Tool" icon={<ArrowRight className="w-4 h-4 text-indigo-400"/>} onDragStart={onDragStart} />
+            <DraggableNode type="api.endpoint" label="API Endpoint" icon={<ArrowRight className="w-4 h-4 text-emerald-400"/>} onDragStart={onDragStart} />
         </Section>
 
       </div>
