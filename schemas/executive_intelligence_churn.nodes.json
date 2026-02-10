@@ -1,0 +1,92 @@
+{
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "type": "aion.nodes.csv_data_source",
+      "displayName": "CSV Data Source",
+      "category": "Data",
+      "version": "1.0.0",
+      "inputs": [
+        { "name": "path", "type": "string", "required": false },
+        { "name": "uploaded_file_id", "type": "string", "required": false },
+        { "name": "delimiter", "type": "string", "required": false, "default": "," },
+        { "name": "encoding", "type": "string", "required": false, "default": "utf-8" }
+      ],
+      "outputs": [
+        { "name": "rows", "type": "array" },
+        { "name": "table", "type": "array" }
+      ]
+    },
+    {
+      "type": "aion.nodes.pii_redaction",
+      "displayName": "PII Redaction",
+      "category": "Governance",
+      "version": "1.0.0",
+      "inputs": [
+        { "name": "columns_to_drop", "type": "array", "required": false, "default": [] },
+        { "name": "columns_to_hash", "type": "array", "required": false, "default": [] },
+        { "name": "policy", "type": "string", "required": false, "default": "LGPD" }
+      ],
+      "outputs": [
+        { "name": "rows", "type": "array" },
+        { "name": "table", "type": "array" },
+        { "name": "governance_report", "type": "object" }
+      ]
+    },
+    {
+      "type": "aion.nodes.feature_engineering_churn",
+      "displayName": "Feature Engineering (Churn)",
+      "category": "ML",
+      "version": "1.0.0",
+      "inputs": [
+        { "name": "rows", "type": "array", "required": true }
+      ],
+      "outputs": [
+        { "name": "features", "type": "array" },
+        { "name": "feature_map", "type": "array" }
+      ]
+    },
+    {
+      "type": "aion.nodes.churn_model_predict",
+      "displayName": "Churn Model Predict",
+      "category": "ML",
+      "version": "1.0.0",
+      "inputs": [
+        { "name": "model_path", "type": "string", "required": true },
+        { "name": "threshold", "type": "number", "required": false, "default": 0.5 }
+      ],
+      "outputs": [
+        { "name": "proba", "type": "array" },
+        { "name": "label", "type": "array" },
+        { "name": "threshold", "type": "number" }
+      ]
+    },
+    {
+      "type": "aion.nodes.explainability",
+      "displayName": "Explainability",
+      "category": "ML",
+      "version": "1.0.0",
+      "inputs": [
+        { "name": "top_k", "type": "number", "required": false, "default": 5 },
+        { "name": "feature_importance", "type": "object", "required": false, "default": {} }
+      ],
+      "outputs": [
+        { "name": "top_factors", "type": "array" },
+        { "name": "method", "type": "string" }
+      ]
+    },
+    {
+      "type": "aion.nodes.executive_brief",
+      "displayName": "Executive Brief",
+      "category": "Reporting",
+      "version": "1.0.0",
+      "inputs": [
+        { "name": "context", "type": "object", "required": false, "default": {} }
+      ],
+      "outputs": [
+        { "name": "executive_brief", "type": "string" },
+        { "name": "recommendation", "type": "string" }
+      ]
+    }
+  ]
+}

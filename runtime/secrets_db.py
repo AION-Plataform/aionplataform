@@ -1,3 +1,12 @@
+import sqlite3
+import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel
+
+from .database import DB_PATH
+
 # Append to database.py - Secrets CRUD
 
 class SecretRecord(BaseModel):

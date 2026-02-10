@@ -46,6 +46,11 @@ def startup_event():
 def health_check():
     return {"status": "ok", "service": "AION Runtime"}
 
+@app.get("/health")
+def health_check_alias():
+    """Compatibility healthcheck endpoint used by proxies and the Studio API client."""
+    return {"status": "ok", "service": "AION Runtime"}
+
 # --- Auth APIs ---
 
 @app.post("/auth/register")

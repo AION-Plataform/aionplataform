@@ -6,6 +6,14 @@ from .core.rag import ChunkTextNode, EmbedNode, VectorStoreNode, RetrieveNode
 from .core.llm import LLMGenerateNode, AgentRouterNode
 from .core.tools import HttpToolNode
 from .core.outputs import ApiEndpointNode
+from .executive_intelligence_churn import (
+    CsvDataSourceNode,
+    PIIRedactionNode,
+    FeatureEngineeringChurnNode,
+    ChurnModelPredictNode,
+    ExplainabilityNode,
+    ExecutiveBriefNode,
+)
 
 class NodeRegistry:
     _registry = {
@@ -25,6 +33,12 @@ class NodeRegistry:
         "agent.react": AgentRouterNode,
         "tool.http": HttpToolNode,
         "api.endpoint": ApiEndpointNode,
+        "aion.nodes.csv_data_source": CsvDataSourceNode,
+        "aion.nodes.pii_redaction": PIIRedactionNode,
+        "aion.nodes.feature_engineering_churn": FeatureEngineeringChurnNode,
+        "aion.nodes.churn_model_predict": ChurnModelPredictNode,
+        "aion.nodes.explainability": ExplainabilityNode,
+        "aion.nodes.executive_brief": ExecutiveBriefNode,
     }
 
     @classmethod

@@ -63,6 +63,17 @@ docker-compose up --build
 ```
 Access the **Studio** at `http://localhost:5173` and the **API** at `http://localhost:8000`.
 
+
+### Dockerfile de instalação (API)
+Se quiser construir apenas a imagem da API com instalação de dependências e validação de import:
+
+```bash
+docker build -f Dockerfile.install -t aion-install .
+docker run --rm -p 8000:8000 aion-install
+```
+
+A API ficará disponível em `http://localhost:8000`.
+
 ### Run Manually
 
 **1. Backend**
