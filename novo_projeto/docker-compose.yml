@@ -1,0 +1,14 @@
+services:
+  api:
+    build: ./api
+    container_name: novo-api
+    ports:
+      - "8000:8000"
+
+  web:
+    build: ./web
+    container_name: novo-web
+    depends_on:
+      - api
+    ports:
+      - "8080:8080"

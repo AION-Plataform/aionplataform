@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Novo Projeto</title>
+    <style>
+      body { font-family: Arial, sans-serif; max-width: 520px; margin: 40px auto; padding: 0 16px; }
+      input, button { width: 100%; margin: 8px 0; padding: 10px; }
+      .row { display: flex; gap: 8px; }
+      .row button { flex: 1; }
+      pre { background: #f4f4f4; padding: 12px; overflow: auto; }
+    </style>
+  </head>
+  <body>
+    <script src="/runtime-config.js"></script>
+    <h1>Novo Projeto (Login)</h1>
+    <p id="api-base"></p>
+
+    <input id="username" placeholder="Usuário" />
+    <input id="password" type="password" placeholder="Senha" />
+
+    <div class="row">
+      <button id="register">Registrar</button>
+      <button id="login">Entrar</button>
+    </div>
+
+    <button id="me">Ver /me</button>
+    <pre id="output">Pronto.</pre>
+
+    <script>
+      const API_BASE_URL = (window.__APP_CONFIG__ && window.__APP_CONFIG__.API_BASE_URL) || '/api';
+      const out = document.getElementById('output');
+      document.getElementById('api-base').textContent = 'API: ' + API_BASE_URL;
+
+      const api = (path) => `${API_BASE_URL}${path}`;
+      const username = () => document.getElementById('username').value;
+      const password = () => document.getElementById('password').value;
+      const print = (v) => out.textContent = typeof v === 'string' ? v : JSON.stringify(v, null, 2);
+
+      async function safeJson(res) {
+        const ct = res.headers.get('content-type') || '';
+        if (!ct.includes('application/json')) {
+          const text = await res.text();
+          throw new Error(`Resposta não-JSON (${res.status}): ${text.slice(0, 120)}`);
+        }
+        return res.json();
+      }
+
+      document.getElementById('register').onclick = async () => {
+        const res = await fetch(api('/auth/register'), {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ username: username(), password: password() })
+        });
+        print(await safeJson(res));
+      };
+
+      document.getElementById('login').onclick = async () => {
+        const form = new FormData();
+        form.append('username', username());
+        form.append('password', password());
+
+        const res = await fetch(api('/auth/token'), { method: 'POST', body: form });
+        const data = await safeJson(res);
+        if (data.access_token) localStorage.setItem('token', data.access_token);
+        print(data);
+      };
+
+      document.getElementById('me').onclick = async () => {
+        const token = localStorage.getItem('token') || '';
+        const res = await fetch(api('/me'), { headers: { Authorization: `Bearer ${token}` } });
+        print(await safeJson(res));
+      };
+    </script>
+  </body>
+</html>
