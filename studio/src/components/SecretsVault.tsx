@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Key, Plus, Trash2, Eye, EyeOff, X } from 'lucide-react';
+import { apiUrl } from '@/lib/api'
 
 interface Secret {
     id: string;
@@ -18,7 +19,7 @@ export const SecretsVault = ({ onClose }: { onClose: () => void }) => {
     const loadSecrets = async () => {
         const token = localStorage.getItem('aion_token');
         try {
-            const res = await fetch('/api/secrets', {
+            const res = await fetch(apiUrl('/secrets'), {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
@@ -41,7 +42,7 @@ export const SecretsVault = ({ onClose }: { onClose: () => void }) => {
         const token = localStorage.getItem('aion_token');
         
         try {
-            const res = await fetch('/api/secrets', {
+            const res = await fetch(apiUrl('/secrets'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -66,7 +67,7 @@ export const SecretsVault = ({ onClose }: { onClose: () => void }) => {
     const handleDelete = async (id: string) => {
         const token = localStorage.getItem('aion_token');
         try {
-            await fetch(`/api/secrets/${id}`, {
+            await fetch(apiUrl(`/secrets/${id}`), {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
