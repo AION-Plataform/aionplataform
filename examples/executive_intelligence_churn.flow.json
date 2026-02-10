@@ -1,0 +1,97 @@
+{
+  "metadata": {
+    "name": "Executive Intelligence - Churn",
+    "version": "1.0.0",
+    "created_at": "2024-01-01T00:00:00Z",
+    "owner": "aion"
+  },
+  "nodes": [
+    {
+      "id": "csv_source",
+      "type": "aion.nodes.csv_data_source",
+      "version": "1.0.0",
+      "config": {
+        "path": "data/customer_churn.csv",
+        "delimiter": ",",
+        "encoding": "utf-8"
+      }
+    },
+    {
+      "id": "pii_redaction",
+      "type": "aion.nodes.pii_redaction",
+      "version": "1.0.0",
+      "config": {
+        "columns_to_drop": ["Surname"],
+        "columns_to_hash": ["CustomerId"],
+        "policy": "LGPD"
+      }
+    },
+    {
+      "id": "feature_engineering",
+      "type": "aion.nodes.feature_engineering_churn",
+      "version": "1.0.0",
+      "config": {}
+    },
+    {
+      "id": "predict",
+      "type": "aion.nodes.churn_model_predict",
+      "version": "1.0.0",
+      "config": {
+        "model_path": "artifacts/model.pkl",
+        "threshold": 0.5
+      }
+    },
+    {
+      "id": "explain",
+      "type": "aion.nodes.explainability",
+      "version": "1.0.0",
+      "config": {
+        "top_k": 5
+      }
+    },
+    {
+      "id": "executive_brief",
+      "type": "aion.nodes.executive_brief",
+      "version": "1.0.0",
+      "config": {
+        "context": {
+          "segment": "clientes premium",
+          "objective": "reduzir churn no segmento"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_csv_to_pii",
+      "from": { "node": "csv_source", "port": "rows" },
+      "to": { "node": "pii_redaction", "port": "rows" }
+    },
+    {
+      "id": "edge_pii_to_fe",
+      "from": { "node": "pii_redaction", "port": "rows" },
+      "to": { "node": "feature_engineering", "port": "rows" }
+    },
+    {
+      "id": "edge_fe_to_predict",
+      "from": { "node": "feature_engineering", "port": "features" },
+      "to": { "node": "predict", "port": "features" }
+    },
+    {
+      "id": "edge_fe_to_explain",
+      "from": { "node": "feature_engineering", "port": "features" },
+      "to": { "node": "explain", "port": "features" }
+    },
+    {
+      "id": "edge_predict_to_brief",
+      "from": { "node": "predict", "port": "proba" },
+      "to": { "node": "executive_brief", "port": "proba" }
+    },
+    {
+      "id": "edge_explain_to_brief",
+      "from": { "node": "explain", "port": "top_factors" },
+      "to": { "node": "executive_brief", "port": "top_factors" }
+    }
+  ],
+  "secrets_ref": []
+}
