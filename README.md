@@ -74,6 +74,31 @@ docker run --rm -p 8000:8000 aion-install
 
 A API ficará disponível em `http://localhost:8000`.
 
+
+### Deploy no EasyPanel
+
+Para evitar erro de porta/proxy no EasyPanel, publique **API e Studio como serviços separados**:
+
+1. **API Service**
+   - Build context: raiz do repositório
+   - Dockerfile: `Dockerfile.install` (ou `Dockerfile`)
+   - Porta interna: `8000`
+   - Variáveis importantes:
+     - `CORS_ORIGINS=https://SEU_DOMINIO_DO_STUDIO`
+     - `SECRET_KEY`, `ENCRYPTION_KEY`, `ENVIRONMENT=production`
+
+2. **Studio Service**
+   - Build context: `studio/`
+   - Dockerfile: `studio/Dockerfile`
+   - Porta interna: usar `PORT` (o container já respeita esse valor)
+   - Variáveis:
+     - `API_BASE_URL=https://SEU_DOMINIO_DA_API`
+     - (opcional fallback de build) `VITE_API_BASE_URL=https://SEU_DOMINIO_DA_API`
+
+> Se Studio e API estiverem no mesmo domínio com reverse proxy em `/api`, você pode manter `API_BASE_URL=/api`.
+
+   - Observação: no container estático, `VITE_*` é resolvido no build. Para trocar a API sem rebuild, use `API_BASE_URL` (runtime), que é injetado em `runtime-config.js` no startup do container.
+
 ### Run Manually
 
 **1. Backend**
