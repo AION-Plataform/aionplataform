@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Lock, User, ArrowRight, Loader2 } from 'lucide-react';
-import { apiUrl } from '@/lib/api'
+import { apiFetch } from '@/lib/api'
 
 interface LoginProps {
     onLogin: (token: string) => void;
@@ -29,8 +29,8 @@ export const Login = ({ onLogin }: LoginProps) => {
         try {
             if (isRegistering) {
                 // Register
-                const registerEndpoint = apiUrl('/auth/register');
-                const res = await fetch(registerEndpoint, {
+                const registerEndpoint = '/auth/register';
+                const res = await apiFetch(registerEndpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
@@ -48,8 +48,8 @@ export const Login = ({ onLogin }: LoginProps) => {
                 formData.append('username', username);
                 formData.append('password', password);
 
-                const loginEndpoint = apiUrl('/auth/token');
-                const res = await fetch(loginEndpoint, {
+                const loginEndpoint = '/auth/token';
+                const res = await apiFetch(loginEndpoint, {
                     method: 'POST',
                     body: formData
                 });

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Trash2, Play, Clock, FolderOpen, X } from 'lucide-react';
-import { apiUrl } from '@/lib/api'
+import { apiFetch } from '@/lib/api'
 
 interface Flow {
     id: string;
@@ -16,7 +16,7 @@ export const FlowLibrary = ({ onClose, onLoadFlow }: { onClose: () => void, onLo
         setLoading(true);
         const token = localStorage.getItem('aion_token');
         try {
-            const res = await fetch(apiUrl('/flows'), {
+            const res = await apiFetch('/flows', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
@@ -39,7 +39,7 @@ export const FlowLibrary = ({ onClose, onLoadFlow }: { onClose: () => void, onLo
         
         const token = localStorage.getItem('aion_token');
         try {
-            await fetch(apiUrl(`/flows/${id}`), {
+            await apiFetch(`/flows/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -52,7 +52,7 @@ export const FlowLibrary = ({ onClose, onLoadFlow }: { onClose: () => void, onLo
     const handleRun = async (flowId: string) => {
         const token = localStorage.getItem('aion_token');
         try {
-            const res = await fetch(apiUrl(`/flows/${flowId}/execute`), {
+            const res = await apiFetch(`/flows/${flowId}/execute`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
