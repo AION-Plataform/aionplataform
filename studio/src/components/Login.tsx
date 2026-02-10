@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Lock, User, ArrowRight, Loader2 } from 'lucide-react';
+import { apiFetch } from '@/lib/api'
 
 interface LoginProps {
     onLogin: (token: string) => void;
@@ -12,6 +13,14 @@ export const Login = ({ onLogin }: LoginProps) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
+
+    const assertJsonResponse = (res: Response, endpoint: string) => {
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+            throw new Error(`Resposta inválida da API em ${endpoint}. Verifique VITE_API_BASE_URL/API_BASE_URL.`);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -20,11 +29,13 @@ export const Login = ({ onLogin }: LoginProps) => {
         try {
             if (isRegistering) {
                 // Register
-                const res = await fetch('/api/auth/register', {
+                const registerEndpoint = '/auth/register';
+                const res = await apiFetch(registerEndpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
+                assertJsonResponse(res, registerEndpoint);
                 if (!res.ok) throw new Error((await res.json()).detail || 'Registration failed');
                 
                 // Auto login after register? Or just switch to login
@@ -37,12 +48,14 @@ export const Login = ({ onLogin }: LoginProps) => {
                 formData.append('username', username);
                 formData.append('password', password);
 
-                const res = await fetch('/api/auth/token', {
+                const loginEndpoint = '/auth/token';
+                const res = await apiFetch(loginEndpoint, {
                     method: 'POST',
                     body: formData
                 });
+                assertJsonResponse(res, loginEndpoint);
                 if (!res.ok) throw new Error('Invalid credentials');
-                
+
                 const data = await res.json();
                 onLogin(data.access_token);
             }

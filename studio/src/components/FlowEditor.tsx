@@ -20,6 +20,7 @@ let id = 0;
 const getId = () => `dndnode_${id++}`;
 
 import { NodeConfigPanel } from './NodeConfigPanel';
+import { apiFetch } from '@/lib/api'
 
 const EditorInner = () => {
     const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -139,7 +140,7 @@ const EditorInner = () => {
       }
 
       try {
-          const response = await fetch('/api/flows', {
+          const response = await apiFetch('/flows', {
               method: 'POST',
               headers: { 
                   'Content-Type': 'application/json',
