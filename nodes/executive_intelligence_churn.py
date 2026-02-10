@@ -73,7 +73,7 @@ class PIIRedactionNode(BaseNode):
         return {"rows": redacted_rows, "table": redacted_rows, "governance_report": report}
 
 
-class FeatureEngineeringBankChurnNode(BaseNode):
+class FeatureEngineeringChurnNode(BaseNode):
     _GEOGRAPHIES = ("France", "Germany", "Spain")
     _GENDERS = ("Male", "Female")
 

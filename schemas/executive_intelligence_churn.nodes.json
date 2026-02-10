@@ -34,8 +34,8 @@
       ]
     },
     {
-      "type": "aion.nodes.feature_engineering_bank_churn",
-      "displayName": "Feature Engineering (Bank Churn)",
+      "type": "aion.nodes.feature_engineering_churn",
+      "displayName": "Feature Engineering (Churn)",
       "category": "ML",
       "version": "1.0.0",
       "inputs": [

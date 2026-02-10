@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "name": "Executive Intelligence - Bank Churn",
+    "name": "Executive Intelligence - Churn",
     "version": "1.0.0",
     "created_at": "2024-01-01T00:00:00Z",
     "owner": "aion"
@@ -11,7 +11,7 @@
       "type": "aion.nodes.csv_data_source",
       "version": "1.0.0",
       "config": {
-        "path": "data/bank_churn.csv",
+        "path": "data/customer_churn.csv",
         "delimiter": ",",
         "encoding": "utf-8"
       }
@@ -28,7 +28,7 @@
     },
     {
       "id": "feature_engineering",
-      "type": "aion.nodes.feature_engineering_bank_churn",
+      "type": "aion.nodes.feature_engineering_churn",
       "version": "1.0.0",
       "config": {}
     },
