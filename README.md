@@ -74,6 +74,31 @@ docker run --rm -p 8000:8000 aion-install
 
 A API ficará disponível em `http://localhost:8000`.
 
+
+### Deploy no EasyPanel
+
+Para evitar erro de porta/proxy no EasyPanel, publique **API e Studio como serviços separados**:
+
+1. **API Service**
+   - Build context: raiz do repositório
+   - Dockerfile: `Dockerfile.install` (ou `Dockerfile`)
+   - Porta interna: `8000`
+   - Variáveis importantes:
+     - `CORS_ORIGINS=https://SEU_DOMINIO_DO_STUDIO`
+     - `SECRET_KEY`, `ENCRYPTION_KEY`, `ENVIRONMENT=production`
+
+2. **Studio Service**
+   - Build context: `studio/`
+   - Dockerfile: `studio/Dockerfile`
+   - Porta interna: usar `PORT` (o container já respeita esse valor)
+   - Variáveis:
+     - `API_BASE_URL=https://SEU_DOMINIO_DA_API`
+     - (opcional fallback de build) `VITE_API_BASE_URL=https://SEU_DOMINIO_DA_API`
+
+> Se Studio e API estiverem no mesmo domínio com reverse proxy em `/api`, você pode manter `API_BASE_URL=/api`.
+
+   - Observação: no container estático, `VITE_*` é resolvido no build. Para trocar a API sem rebuild, use `API_BASE_URL` (runtime), que é injetado em `runtime-config.js` no startup do container.
+
 ### Run Manually
 
 **1. Backend**
@@ -90,9 +115,17 @@ npm run dev
 ```
 Access the Studio at `http://localhost:5173`.
 
+
+## 👤 Onde os usuários ficam salvos
+
+- O Runtime persiste usuários no SQLite local `aion.db`, tabela `users` (`id`, `username`, `hashed_password`).
+- O caminho do banco é definido em `runtime/database.py` por `DB_PATH = "aion.db"`, então o arquivo é criado no diretório de execução do serviço da API.
+- Senhas **não** são salvas em texto puro: são armazenadas como hash (`pbkdf2_sha256`) em `hashed_password`.
+
 ## 📚 Documentation
 -   [Architecture Overview](docs/architecture.md)
 -   [DSL Specification](docs/dsl_spec.md)
+-   [Studio API Connections](docs/studio_api_connections.md)
 
 ## 🔐 Security
 Default credentials for local dev (if using seeded DB):

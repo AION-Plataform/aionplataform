@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Lock, User, ArrowRight, Loader2 } from 'lucide-react';
+import { apiFetch } from '@/lib/api'
 
 interface LoginProps {
     onLogin: (token: string) => void;
@@ -12,6 +13,18 @@ export const Login = ({ onLogin }: LoginProps) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
+    const readJsonOrThrow = async (res: Response, endpoint: string) => {
+        const responseText = await res.text();
+
+        try {
+            return responseText ? JSON.parse(responseText) : {};
+        } catch {
+            const contentType = res.headers.get('content-type') || 'desconhecido';
+            const preview = responseText.slice(0, 120).replace(/\s+/g, ' ').trim();
+            throw new Error(`Resposta inválida da API em ${endpoint} (status ${res.status}, content-type: ${contentType}). URL final: ${res.url}. Preview: ${preview || '[vazio]'}. Verifique API_BASE_URL/VITE_API_BASE_URL e proxy /api.`);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -20,12 +33,14 @@ export const Login = ({ onLogin }: LoginProps) => {
         try {
             if (isRegistering) {
                 // Register
-                const res = await fetch('/api/auth/register', {
+                const registerEndpoint = '/auth/register';
+                const res = await apiFetch(registerEndpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
-                if (!res.ok) throw new Error((await res.json()).detail || 'Registration failed');
+                const data = await readJsonOrThrow(res, registerEndpoint);
+                if (!res.ok) throw new Error(data.detail || 'Registration failed');
                 
                 // Auto login after register? Or just switch to login
                 setIsRegistering(false);
@@ -37,13 +52,13 @@ export const Login = ({ onLogin }: LoginProps) => {
                 formData.append('username', username);
                 formData.append('password', password);
 
-                const res = await fetch('/api/auth/token', {
+                const loginEndpoint = '/auth/token';
+                const res = await apiFetch(loginEndpoint, {
                     method: 'POST',
                     body: formData
                 });
+                const data = await readJsonOrThrow(res, loginEndpoint);
                 if (!res.ok) throw new Error('Invalid credentials');
-                
-                const data = await res.json();
                 onLogin(data.access_token);
             }
         } catch (err: any) {
